@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+    <title>An Innovative Method of Visualizing Prize Data</title>
+    
+    <!-- testing!! -->
+    <!--link rel="stylesheet" type="text/css" href="styles.css"/-->
+    
+    <!-- Load D3.js -->
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+
+    <!-- Load Bootstrap Style Sheet -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+    <!-- Bootstrap.slider-->
+    <script src="js/bootstrap-slider.js"></script> 
+    <script src="js/bootstrap-slider.min.js"></script>
+    <link rel="stylesheet" href="css/bootstrap-slider.css">
+    <link rel="stylesheet" href="css/bootstrap-slider.min.css">
+
+	<!-- Load plotly.js into the DOM -->
+	<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+
+    <!-- Load this page's styles -->
+    <style>
+        body    
+        {
+            overflow-y:scroll;
+            /* background-color: rgb(34, 34, 34); */
+        }
+
+        #banner {
+            color: black;
+        }
+
+        svg
+        {
+            margin-left: auto;
+            margin-right: auto;  
+            display: block;
+            /*background-color: white; */
+        }
+
+        #mainVizControls, #sankeyControls {
+            width: 90%;
+            border: 1px solid black;
+            margin: 0px auto;
+            padding: 1px;
+            background-color: lightgray;
+        }
+
+        #mainviz {
+            border-left: 1px solid black;
+            border-right: 1px solid black;
+            width: 90%;
+            margin: 0px auto;
+            padding: 1px;
+            background-color: white;
+        }
+
+        #sankeyviz, #laureateDetailsOuter {
+            border-left: 1px solid black;
+            border-right: 1px solid black;
+            border-bottom: 1px solid black;
+            width: 90%;
+            margin: 0px auto;
+            padding: 1px;
+            background-color: white;
+        }
+
+        #laureateDetails {
+            width: 70%;
+            margin: 0px auto;
+            background-color: white;
+        }
+
+        #laureateDetailsRightPanel {
+            border: 1px solid gray;
+            width: 70%;
+            margin: 0px auto;
+            padding: 5px;
+            background-color: ivory;
+        }
+
+        div.colorLegendBox {
+            display: inline-block; 
+            width: 10px; 
+            height: 10px; 
+            vertical-align:middle
+        }
+
+        #ex1Slider .slider-selection {
+	        background: #BABABA;
+        }
+
+        img {
+            max-width:100%;
+            height:auto;
+        }
+
+        .scrollable-menu {
+            height: auto;
+            max-height: 200px;
+            overflow-x: hidden;
+        }
+
+
+    </style>
+</head>
+
+<body>
+    <!-- Title Box -->
+    <div class="container" id="banner">
+        <h1 style="text-align:center">Visualizing the Nobel Prizes: An Innovative Take</h1><br>
+        <h5>Explore individual Nobel Laurates over the past 119 years. Change the y-axis. Change the colors. Select Different Years.
+            Choose a filter. 
+            Hover over a box to see Laureate's name and prize category. 
+            Click to see details about the Laureate. </h5>
+    </div>
+    
+
+    <!-- Main Viz Controls Box -->
+    <div id="mainVizControls">
+
+        <div style="display: inline-block; width: 90%;" >
+
+            <!-- Y axis Options -->
+            <text style="padding-top: 5px; padding-right: 5px; padding-left: 20px;">Choose Y-axis: </text>
+            <div class="dropdown" style="display: inline" >
+                <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="yaxisDropDownMenuHead" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Prize Category
+                </button>
+                <div class="dropdown-menu" aria-labelledby="colorDropDownMenu">
+                    <button class="dropdown-item btn-sm" type="button" id="yaxisDropDownMenuOption" value="category">Prize Category</button>
+                    <button class="dropdown-item btn-sm" type="button" id="yaxisDropDownMenuOption" value="prizeShare">Prize Share</button>
+                    <button class="dropdown-item btn-sm" type="button" id="yaxisDropDownMenuOption" value="timesPrizeWon">Number of Nobel Prizes Won</button>
+
+                    <button class="dropdown-item btn-sm" type="button" id="yaxisDropDownMenuOption" value="name" style="border-top: 1px solid lightgrey">Institution when Work Published</button>
+                    <button class="dropdown-item btn-sm" type="button" id="yaxisDropDownMenuOption" value="countryClean">Country of Institution</button>
+                    <button class="dropdown-item btn-sm" type="button" id="yaxisDropDownMenuOption" value="yearsSincePublishedBin">Years since Work Published</button>
+
+                    <button class="dropdown-item btn-sm" type="button" id="yaxisDropDownMenuOption" value="gender" style="border-top: 1px solid lightgrey">Gender</button>
+                    <button class="dropdown-item btn-sm" type="button" id="yaxisDropDownMenuOption" value="ageBin">Age at Award</button>
+                    <button class="dropdown-item btn-sm" type="button" id="yaxisDropDownMenuOption" value="bornCountryBin">Country of Birth (>= 20 Laureates)</button>
+                    <button class="dropdown-item btn-sm" type="button" id="yaxisDropDownMenuOption" value="bornCountryClean">Country of Birth (All)</button>
+                    <!-- country of death? maybe not... -->
+                                        
+                    <button class="dropdown-item btn-sm" type="button" id="yaxisDropDownMenuOption" value="nil" style="border-top: 1px solid lightgrey">None</button>
+                </div>
+            </div>
+
+            <!-- future feature: allow to select at least X laureates per bin, if not hide that category -->
+            <div class="dropdown" style="display: none">
+                <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="yaxisFilter" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    All
+                </button>
+                <div class="dropdown-menu" aria-labelledby="yaxisFilterDropDownMenu">
+                    <button class="dropdown-item btn-sm" type="button" id="yxisFilterOption" value="category">All</button>
+                    <button class="dropdown-item btn-sm" type="button" id="yxisFilterOption" value="category">With at least 10 Laureates</button>
+                </div>
+
+            </div>
+
+            <!-- Year slider -->
+            <div style="display: inline-block;">
+                <text style="padding-top: 5px; padding-right: 5px; padding-left: 20px;">Select years to show:</text>
+                <span id="yearStartVal" style="font-weight: bold">1901</span> &nbsp;&nbsp;&nbsp;
+                <input id="ex2" type="text" class="span2" value="" data-slider-min="1901" data-slider-max="2019" data-slider-step="1" data-slider-value="[1901,2019]" style="width:200px"/>
+                &nbsp;&nbsp;&nbsp; <span id="yearEndVal" style="font-weight: bold">2019</span>
+            </div>
+
+            <br>
+
+            <!-- country filter options -->
+            <text style="padding-top: 5px; padding-right: 5px; padding-left: 20px;">Choose filters:</text>
+            <div class="dropdown scrollable-menu" style="display: inline" id="countrySelectorDivOverall">
+                <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="countrySelectorDropDownMenuHead" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    All Countries
+                </button>
+                <div class="dropdown-menu scrollable-menu" aria-labelledby="colorDropDownMenu" id="countrySelectorDivItems">
+                    <button class="dropdown-item btn-sm" type="button" id="yaxisDropDownMenuOption" value="category">Prize Category</button>
+
+                </div>
+            </div>
+
+            <!-- Color Encoding Options -->
+            <text style="padding-top: 5px; padding-right: 5px; padding-left: 20px;">Choose color encoding:</text>
+            <div class="dropdown" style="display: inline">
+                <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="colorDropDownMenuHead" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Gender
+                </button>
+                <div class="dropdown-menu" aria-labelledby="colorDropDownMenu">
+                    <button class="dropdown-item btn-sm" type="button" id="colorDropDownMenuOption" value="category">Prize Category</button>
+                    <button class="dropdown-item btn-sm" type="button" id="colorDropDownMenuOption" value="prizeShare">Prize Share</button>
+                    <button class="dropdown-item btn-sm" type="button" id="colorDropDownMenuOption" value="timesPrizeWon">Number of Nobel Prizes Won</button>
+
+                    <button class="dropdown-item btn-sm" type="button" id="colorDropDownMenuOption" value="yearsSincePublishedBin" 
+                        style="border-top: 1px solid lightgrey">Years since Work Published</button>
+
+                    <button class="dropdown-item btn-sm" type="button" id="colorDropDownMenuOption" value="gender" style="border-top: 1px solid lightgrey">Gender</button>
+                    <button class="dropdown-item btn-sm" type="button" id="colorDropDownMenuOption" value="ageBin">Age at Award</button>
+                    <button class="dropdown-item btn-sm" type="button" id="colorDropDownMenuOption" value="ageCurrentBin">Current Age</button>
+                    <!--button class="dropdown-item btn-sm" type="button" id="colorDropDownMenuOption" value="bornCountryClean">Country of Birth</button-->
+                </div>
+            </div>
+
+            &nbsp; &nbsp; <div id="colorLegend" style="display: inline"></div>
+
+        </div>
+
+        <!-- Display the year the mouse is currently hovering over -->
+        <div id="displayYearSpanDiv" style="display: inline-block; text-align: center; width: 9%;">
+            <h5 style="color: steelblue">Year:</h5>
+            <h3><span id="displayYearSpan" style="color: steelblue">2019</span></h3>
+        </div> 
+    </div>
+
+    
+    <!-- attach the main viz container -->
+    <div id="mainviz"></div>
+
+
+    <!-- attach the laureate details container, default = hidden. Enabled by js. -->
+    <div id="laureateDetailsOuter">
+        <div id="laureateDetails" style="display: none; vertical-align:top"><!--style="border: 1px solid gray"-->
+
+            <!-- left panel, for picture -->
+            <div id="laureateDetailsLeftPanel" style="display: inline-block; width: 20%; height: 100%; background-color: white; vertical-align:top">
+                <span id="laureateDetailsPicture"><img id="laureatePicture"></span>
+            </div>
+
+            <!-- right panel, for text -->
+            <div id="laureateDetailsRightPanel" style="display: inline-block; width: 79%; height: 100%; background-color: ivory; vertical-align:top">
+                <h2><span id="laureateName"></span></h2>
+                <h5><span id="laureateAward"></span></h5>
+                <h6><span id="laureateMotivation"></span></h6>
+
+                <span id="laureatePrizeShare"></span>
+
+                <span id="laureateInstitution"></span>
+                <span id="laureateWorkPublished"></span>
+
+                <br>
+                <p>
+                    <span id="laureateGender"></span>
+                    <span id="laureateBorn"></span>
+                    <span id="laureateDeath"></span>
+                    Age at Nobel Prize Award: <span id="laureateAge"></span>
+                    <br><br>
+
+                    <span id="laureateOtherPrizes"></span>
+                    Website: <a id="laureateWebsiteLink" target="_blank"><span id="laureateWebsite"></span></a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <hr style="border: 0; height: 1px; width: 50%; background: #c4bfbf;">
+
+    <!------------------------------------------------------------------------------------------>
+    <!----------------------------------- Sankey Starts Here ----------------------------------->
+    <!------------------------------------------------------------------------------------------>
+
+    <!-- Instructions for the Sankey -->
+    <div class="container" id="banner">
+        <h5>Which country has produced the most Laureates in Economics? How many Laureates work in a different country than where they were born? 
+            Where have they come from, where did they end up? 
+            Select different axes below to explore. 
+        </h5>
+    </div>
+
+    <div id="sankeyControls">
+
+        <div style="display: inline-block; width: 100%; padding:10px;" >
+
+            <!-- Left axis Options -->
+            <text style="padding-top: 5px; padding-right: 5px; padding-left: 20px;">Select Left Axis </text>
+            <div class="dropdown" style="display: inline" >
+                <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="sankeyDropDownMenuLeftHead" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Country of Birth
+                </button>
+                <div class="dropdown-menu" aria-labelledby="colorDropDownMenu">
+                    <button class="dropdown-item btn-sm" type="button" id="sankeyDropDownMenuLeftOption" value="category">Category</button>
+                    <button class="dropdown-item btn-sm" type="button" id="sankeyDropDownMenuLeftOption" value="prizeShare">Prize Share</button>
+                    <button class="dropdown-item btn-sm" type="button" id="sankeyDropDownMenuLeftOption" value="timesPrizeWon">Number of Nobel Prizes Won</button>
+
+                    <button class="dropdown-item btn-sm" type="button" id="sankeyDropDownMenuLeftOption" value="name" style="border-top: 1px solid lightgrey">Institution</button>
+                    <button class="dropdown-item btn-sm" type="button" id="sankeyDropDownMenuLeftOption" value="countryClean">Country of Institution</button>
+                    <button class="dropdown-item btn-sm" type="button" id="sankeyDropDownMenuLeftOption" value="yearsSincePublishedBin">Years since Work Published</button>
+
+                    <button class="dropdown-item btn-sm" type="button" id="sankeyDropDownMenuLeftOption" value="gender" style="border-top: 1px solid lightgrey">Gender</button>
+                    <button class="dropdown-item btn-sm" type="button" id="sankeyDropDownMenuLeftOption" value="ageBin">Age at Award</button>
+                    <button class="dropdown-item btn-sm" type="button" id="sankeyDropDownMenuLeftOption" value="bornCountryClean">Country of Birth</button>
+                    <!--button class="dropdown-item btn-sm" type="button" id="sankeyDropDownMenuLeftOption" value="bornCountryBin">Country of Birth (>= 20 Laureates)</button-->
+                </div>
+            </div>
+
+            <!-- Right axis Options -->
+            <text style="padding-top: 5px; padding-right: 5px; padding-left: 50px;">Select Right Axis: </text>
+            <div class="dropdown" style="display: inline" >
+                <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="sankeyDropDownMenuRightHead" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Country of Work Institution
+                </button>
+                <div class="dropdown-menu" aria-labelledby="colorDropDownMenu">
+                    <button class="dropdown-item btn-sm" type="button" id="sankeyDropDownMenuRightOption" value="category">Category</button>
+                    <button class="dropdown-item btn-sm" type="button" id="sankeyDropDownMenuRightOption" value="prizeShare">Prize Share</button>
+                    <button class="dropdown-item btn-sm" type="button" id="sankeyDropDownMenuRightOption" value="timesPrizeWon">Number of Nobel Prizes Won</button>
+
+                    <button class="dropdown-item btn-sm" type="button" id="sankeyDropDownMenuRightOption" value="name" style="border-top: 1px solid lightgrey">Institution</button>
+                    <button class="dropdown-item btn-sm" type="button" id="sankeyDropDownMenuRightOption" value="countryClean">Country of Work Institution</button>
+                    <button class="dropdown-item btn-sm" type="button" id="sankeyDropDownMenuRightOption" value="yearsSincePublishedBin">Years since Work Published</button>
+
+                    <button class="dropdown-item btn-sm" type="button" id="sankeyDropDownMenuRightOption" value="gender" style="border-top: 1px solid lightgrey">Gender</button>
+                    <button class="dropdown-item btn-sm" type="button" id="sankeyDropDownMenuRightOption" value="ageBin">Age at Award</button>
+                    <button class="dropdown-item btn-sm" type="button" id="sankeyDropDownMenuRightOption" value="bornCountryClean">Country of Birth</button>
+                    <!--button class="dropdown-item btn-sm" type="button" id="sankeyDropDownMenuRightOption" value="bornCountryBin">Country of Birth (>= 20 Laureates)</button-->
+
+                </div>
+            </div>
+
+            <!-- error box -->
+            <span id="sankeyErrorMessage" style="padding-left: 20px; color: red; font-weight: bold;"></span>
+        </div>
+
+    </div>
+    
+    <!-- Sankey Diagram here -->
+    <!-- Plotly chart will be drawn inside this DIV -->
+    <div id='sankeyviz'></div>
+
+
+    <!-- Scripts -->
+
+    <!--Insert Main Visualization Script Here -->
+    <script src="mainviz.js"></script>
+
+    <!-- The Sankey Script -->
+    <script src="sankey.js"></script>
+    
+    <!-- Code for the year slider and its behavior-->
+    <script>
+        var slider = new Slider('#ex2', {
+            tooltip: "show"
+        });
+
+
+        slider.on("slide", function(sliderValue) {
+            document.getElementById("yearStartVal").textContent = sliderValue[0];
+            document.getElementById("yearEndVal").textContent = sliderValue[1];
+            
+            // call replot x-axis.
+            yearsChanged(sliderValue);
+        });
+
+        // click is broken - fix later. 
+        slider.on("slideStop", function(sliderValue) {
+            document.getElementById("yearStartVal").textContent = sliderValue[0];
+            document.getElementById("yearEndVal").textContent = sliderValue[1];
+            
+            yearsChanged(sliderValue);
+        })
+
+        //slider.on("change", d => alert("Slider Changed"));
+    </script>
+    
+    <hr style="border: 0; height: 1px; background: rgb(53, 52, 52);">
+    <p style="font-size: 10px; color: #313131;"><i>An MIT 6.894 (Spring 2020) Final Project by Kristin Chen & Daryl Phua.</i></p>
+</body>
+</html>
