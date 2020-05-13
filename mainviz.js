@@ -323,7 +323,13 @@ d3.csv('data_v2.csv').then(function(data) {
                 .attr("fill-opacity", 0)
                 .attr("fill", "lavender")
                 .on("mouseover", handleMouseOverYearHoverBoxes)
-                .on("mouseout", handleMouseOutYearHoverBoxes);
+                .on("mouseout", handleMouseOutYearHoverBoxes)
+                .on("click", d => {
+                    currentDisplayedDetail = 0;
+                    d3.select("#laureateDetails").style("display", "none");
+                    d3.select("#laureates").selectAll("rect").attr("fill-opacity", 1);
+                    zoomedIn = false;
+                });
     };
 
     function handleMouseOverYearHoverBoxes(d) {
@@ -832,7 +838,13 @@ d3.csv('data_v2.csv').then(function(data) {
                 .attr("fill-opacity", 0)
                 .attr("fill", "lavender")
                 .on("mouseover", handleMouseOverYearHoverBoxes)
-                .on("mouseout", handleMouseOutYearHoverBoxes);
+                .on("mouseout", handleMouseOutYearHoverBoxes)
+                .on("click", d => {
+                    currentDisplayedDetail = 0;
+                    d3.select("#laureateDetails").style("display", "none");
+                    d3.select("#laureates").selectAll("rect").attr("fill-opacity", 1);
+                    zoomedIn = false;
+                });
 
         svg.select("#laureates").selectAll("rect").remove();
         
